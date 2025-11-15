@@ -8,7 +8,6 @@ import urllib.request
 kill_process = False
 requested_video_name = None
 idle_is_playing = True
-video_queue = []
 CONFIG_VIDEO_PATH = "video_folder"
 CONFIG_IDLE_VIDEO_NAME = "idle_video"
 CONFIG_SERVER_URL = "server_url"
@@ -41,7 +40,6 @@ def play_video(video):
     vid = Video(video)
 
     win = pygame.display.set_mode(vid.current_size, pygame.FULLSCREEN | pygame.SCALED)
-    # pygame.display.set_caption(vid.name)
     while vid.active:
         key = None
         requested_video_name = check_video_request()
@@ -73,12 +71,6 @@ def play_idle_video():
     play_video(idle_video())
     idle_is_playing = False
     return
-
-def init_video_queue():
-    all_videos = glob.glob(f"{video_directory()}/*.mp4")
-    all_videos.remove(f"{idle_video()}")
-    random.shuffle(all_videos)
-    return all_videos
 
 def loop():
     global requested_video_name
