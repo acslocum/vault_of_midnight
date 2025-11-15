@@ -1,0 +1,17 @@
+{
+  "name": "pope_server",
+  "version": "1.0.0",
+  "description": "server for popemon",
+  "main": "server.js",
+  "scripts": {
+    "test": "test",
+    "dev": "node server.js"
+  },
+  "author": "slocum",
+  "license": "ISC",
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.921.0",
+    "@aws-sdk/lib-dynamodb": "^3.921.0",
+    "express": "^5.1.0"
+  }
+}
