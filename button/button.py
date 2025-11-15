@@ -3,13 +3,15 @@ from pyvidplayer2 import Video
 import glob
 import random
 import configparser
+import urllib.request
 
 kill_process = False
-button_pushed = False
+requested_video_name = None
 idle_is_playing = True
 video_queue = []
 CONFIG_VIDEO_PATH = "video_folder"
 CONFIG_IDLE_VIDEO_NAME = "idle_video"
+CONFIG_SERVER_URL = "server_url"
 config = None
 
 def read_configuration():
@@ -21,24 +23,34 @@ def debug(value):
     if config[configparser.UNNAMED_SECTION].getboolean("debug"):
         print(value)
 
+def check_video_request():
+    global requested_video_name
+    global CONFIG_SERVER_URL
+    url = f"{config[configparser.UNNAMED_SECTION][CONFIG_SERVER_URL]}/watch"
+    contents = urllib.request.urlopen(url).read()
+    if contents:
+        debug(f"scanned <{contents.decode('utf-8')}>")
+        return contents.decode('utf-8')
+    return None
+
 def play_video(video):
     global kill_process
-    global button_pushed
+    global requested_video_name
     global idle_is_playing
-    debug(video)
+    debug(f"playing: <{video}>")
     vid = Video(video)
 
     win = pygame.display.set_mode(vid.current_size, pygame.FULLSCREEN | pygame.SCALED)
     # pygame.display.set_caption(vid.name)
     while vid.active:
         key = None
+        requested_video_name = check_video_request()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 vid.stop()
                 kill_process = True
-            elif (event.type == pygame.KEYDOWN) & (idle_is_playing == True):
-                vid.stop()
-                button_pushed = True
+        if (requested_video_name is not None) & (idle_is_playing == True):
+            vid.stop()
         if vid.draw(win, (0, 0), force_draw=False):
             pygame.display.update()
         pygame.time.wait(16) # around 60 fps
@@ -68,21 +80,13 @@ def init_video_queue():
     random.shuffle(all_videos)
     return all_videos
 
-def choose_video():
-    global video_queue
-    if len(video_queue) == 0:
-        video_queue = init_video_queue()
-    debug(video_queue)
-    return video_queue.pop(0)
-
 def loop():
-    global button_pushed
+    global requested_video_name
     global kill_process
     play_idle_video()
-    if button_pushed == True:
-        play_video(choose_video())
-        button_pushed = False
-    elif kill_process == True:
+    if requested_video_name:
+        play_video(f"{video_directory()}/{requested_video_name}")
+        requested_video_name = None
         return
 
 def run():
