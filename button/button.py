@@ -11,6 +11,7 @@ idle_is_playing = True
 CONFIG_VIDEO_PATH = "video_folder"
 CONFIG_IDLE_VIDEO_NAME = "idle_video"
 CONFIG_SERVER_URL = "server_url"
+FPS_MAX = "fps_max"
 config = None
 
 def read_configuration():
@@ -32,6 +33,13 @@ def check_video_request():
         return contents.decode('utf-8')
     return None
 
+def fps_sleep():
+    global FPS_MAX
+    fps = config[configparser.UNNAMED_SECTION].getint(FPS_MAX)
+    if fps:
+        return int(1000//fps)
+    return 16
+
 def play_video(video):
     global kill_process
     global requested_video_name
@@ -51,8 +59,7 @@ def play_video(video):
             vid.stop()
         if vid.draw(win, (0, 0), force_draw=False):
             pygame.display.update()
-        pygame.time.wait(16) # around 60 fps
-    # close video when done
+        pygame.time.wait(fps_sleep()) # around 60 fps
     vid.close()
 
 def video_directory():
