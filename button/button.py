@@ -47,7 +47,7 @@ def play_video(video):
     debug(f"playing: <{video}>")
     vid = Video(video)
 
-    win = pygame.display.set_mode(vid.current_size, pygame.FULLSCREEN | pygame.SCALED)
+    win = pygame.display.set_mode((1280,720), pygame.FULLSCREEN | pygame.SCALED)
     while vid.active:
         key = None
         requested_video_name = check_video_request()
