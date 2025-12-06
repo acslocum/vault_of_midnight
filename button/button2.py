@@ -7,6 +7,7 @@ from PyQt6.QtWidgets import (
 )
 from PyQt6.QtCore import QTimer, Qt
 import vlc
+from pathlib import Path
 
 import configparser
 import urllib.request
@@ -78,7 +79,6 @@ class VideoPlayer(QMainWindow):
         self.play_idle_video()
         requested_video_name = self.check_video_request()
         if requested_video_name:
-            print(f"{self.video_directory()}/{requested_video_name}")
             self.play_video(f"{self.video_directory()}/{requested_video_name}")
             requested_video_name = None
             return
@@ -105,8 +105,10 @@ class VideoPlayer(QMainWindow):
     def open_file(self, video):
         # Open a file dialog to select a video file.
         self.filename = video
+        path = Path(video)
+        print(path.absolute())
         if self.filename:
-            media = self.instance.media_new(self.filename)
+            media = self.instance.media_new(path.absolute())
             self.mediaplayer.set_media(media)
             print(self.video_frame.winId())
             # Embed the VLC video output into our video frame.
