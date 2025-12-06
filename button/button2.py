@@ -50,6 +50,8 @@ class VideoPlayer(QMainWindow):
         self.video_frame.setStyleSheet("background: black; border: 0px; padding: 0px; margin: 0px")
         self.layout.addWidget(self.video_frame)
 
+        self.setCursor(Qt.CursorShape.BlankCursor)
+
         #timer to check events
         self.timer = QTimer(self)
         self.timer.setInterval(500)
