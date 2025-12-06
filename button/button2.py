@@ -51,7 +51,7 @@ class VideoPlayer(QMainWindow):
 
         #timer to check events
         self.timer = QTimer(self)
-        self.timer.setInterval(500)
+        self.timer.setInterval(1000)
         self.timer.timeout.connect(self.updateUI)
         self.timer.start()
 
