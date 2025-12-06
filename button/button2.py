@@ -8,6 +8,7 @@ from PyQt6.QtWidgets import (
 from PyQt6.QtCore import QTimer, Qt
 import vlc
 from pathlib import Path
+from time import sleep
 
 import configparser
 import urllib.request
@@ -51,7 +52,7 @@ class VideoPlayer(QMainWindow):
 
         #timer to check events
         self.timer = QTimer(self)
-        self.timer.setInterval(1000)
+        self.timer.setInterval(500)
         self.timer.timeout.connect(self.updateUI)
         self.timer.start()
 
@@ -100,6 +101,9 @@ class VideoPlayer(QMainWindow):
             self.stop_video()
             idle_is_playing = False
             self.open_file(video)
+            self.timer.stop()
+            sleep(2)
+            self.timer.start()
 
 
     def open_file(self, video):
