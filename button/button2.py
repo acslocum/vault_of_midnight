@@ -49,6 +49,7 @@ class VideoPlayer(QMainWindow):
         if self.filename:
             media = self.instance.media_new(self.filename)
             self.mediaplayer.set_media(media)
+            print(self.video_frame.winId())
             # Embed the VLC video output into our video frame.
             if sys.platform.startswith('linux'):
                 self.mediaplayer.set_xwindow(int(self.video_frame.winId()))
