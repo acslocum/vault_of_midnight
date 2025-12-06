@@ -78,7 +78,7 @@ class VideoPlayer(QMainWindow):
         self.play_idle_video()
         requested_video_name = self.check_video_request()
         if requested_video_name:
-            print(requested_video_name)
+            print(f"{self.video_directory()}/{requested_video_name}")
             self.play_video(f"{self.video_directory()}/{requested_video_name}")
             requested_video_name = None
             return
