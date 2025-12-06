@@ -11,4 +11,4 @@
 #pin install pyvidplayer2
 #python3 ./button.py
 
-#pip install pyqt6
+#pip install pyqt6 python-vlc
