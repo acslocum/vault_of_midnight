@@ -10,3 +10,5 @@
 #pip install pygame
 #pin install pyvidplayer2
 #python3 ./button.py
+
+#pip install pyqt6
