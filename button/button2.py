@@ -88,8 +88,8 @@ class VideoPlayer(QMainWindow):
     def check_video_request(self):
         global requested_video_name
         global CONFIG_SERVER_URL
-        url = f"{config[configparser.UNNAMED_SECTION][CONFIG_SERVER_URL]}/watch"
-        contents = urllib.request.urlopen(url).read()
+        server_url = f"{config[configparser.UNNAMED_SECTION][CONFIG_SERVER_URL]}/watch"
+        contents = urllib.request.urlopen(url=server_url, timeout=5).read()
         if contents:
             #debug(f"scanned <{contents.decode('utf-8')}>")
             return contents.decode('utf-8')
