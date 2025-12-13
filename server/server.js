@@ -18,7 +18,7 @@ const phrases = ["Ph'nglui mglw'nafh Cthulhu R'lyeh wgah'nagl fhtagn",
 ]
 
 function response_quote() {
-  return `<div style="font-size: 40px;">${phrases[Math.floor(Math.random() * phrases.length)]}</div>`
+  return `<div style="font-size: 80px;">${phrases[Math.floor(Math.random() * phrases.length)]}</div>`
 };
 
 app.get('/scan/:video', (req, res) => {

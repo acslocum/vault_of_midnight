@@ -12,3 +12,5 @@
 #python3 ./button.py
 
 #pip install pyqt6 python-vlc
+
+#switch to xwindows in sudo rasbpi-config (advanced settings)
