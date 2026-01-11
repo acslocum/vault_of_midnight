@@ -26,6 +26,12 @@ app.get('/scan/:video', (req, res) => {
   res.send(response_quote());
 });
 
+app.get('/debug/:file', (req, res) => {
+  last_scanned = req.params.file;
+  res.send('Received ' + last_scanned);
+  console.log('Received debug: ' + last_scanned)
+});
+
 app.get('/watch', (req,res) => {
   res.send(last_scanned);
   last_scanned = undefined;
