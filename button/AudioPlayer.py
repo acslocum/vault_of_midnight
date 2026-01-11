@@ -35,7 +35,7 @@ class AudioPlayer(QObject):
         files = os.listdir(self.media_dir)
         files.remove(self.idle)
         self.files = files
-        print(self.files)
+        #print(self.files)
 
     @pyqtSlot(str)
     def triggered(self, filename : str):
