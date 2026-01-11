@@ -24,14 +24,31 @@ class ButtonTrigger(QObject):
         self.section = 'button_params'
         self.button = None
         if rpi:
-            self.button = self.config.get(self.section, 'pin')
+            self.button = int(self.config.get(self.section, 'pin'))
             print(f'ButtonTrigger: watching pin {self.button}')
+            if self.config.get(self.section, 'gpio_mode') == 'BOARD':
+                GPIO.setmode(GPIO.BOARD)
+            elif self.config.get(self.section, 'gpio_mode') == 'BCM':
+                GPIO.setmode(GPIO.BCM)
 
-        self.timeout = int(self.config.get(self.section, 'interval'))
+            # Set up the pin as an input with a pull-up or pull-down resistor
+            # This example uses a pull-up, so the button should connect to ground when pressed
+            GPIO.setup(self.button, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
-        self.timer = QTimer(self)
-        self.timer.timeout.connect(self.slotTimeout)
-        self.timer.start(self.timeout)
+            # Add event detection with a bouncetime of 200ms
+            # The callback function will only be called once every 200ms
+            GPIO.add_event_detect(self.button, GPIO.FALLING, callback=self.gpioCallback, bouncetime=200)
+        else:
+            self.timeout = int(self.config.get(self.section, 'interval'))
+
+            self.timer = QTimer(self)
+            self.timer.timeout.connect(self.slotTimeout)
+            self.timer.start(self.timeout)
+
+
+    def gpioCallback(self, channel):
+        print(f"Button pressed on channel {channel}!")
+        self.triggered.emit('')
 
     @pyqtSlot()
     def slotTimeout(self):
