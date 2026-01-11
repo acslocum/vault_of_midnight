@@ -47,6 +47,11 @@ class AudioPlayer(QObject):
             #print(f'Audio Player playing requested: {filename}')
             pass
 
+        # check if file actually exists
+        if not os.path.isfile(filename):
+            print(f'AudioPlayer: file not found: {filename}')
+            return
+
         # player should always be playing idle.mp3
         pygame.mixer.music.fadeout(300)
 
