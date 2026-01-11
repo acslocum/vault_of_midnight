@@ -17,9 +17,9 @@ import ConsolePlayer
 import VideoPlayer
 
 # import trigger classes
+import ButtonTrigger
 import TimerTrigger
 import URLTrigger
-#import ButtonTrigger
 
 kill_process = False
 config = None
@@ -65,7 +65,9 @@ if __name__ == "__main__":
         
         # create the correct type of trigger
         trigger_type = config.get('general', 'trigger_type')
-        if trigger_type == 'timer':
+        if trigger_type == 'button':
+            trigger = ButtonTrigger.ButtonTrigger(config)
+        elif trigger_type == 'timer':
             trigger = TimerTrigger.TimerTrigger(config)
         elif trigger_type == 'url':
             trigger = URLTrigger.URLTrigger(config)
