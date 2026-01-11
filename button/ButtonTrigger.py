@@ -23,6 +23,7 @@ class ButtonTrigger(QObject):
         self.config = config
         self.section = 'button_params'
         self.button = None
+        self.debounce = int(self.config.get(self.section, 'debounce'))
         if rpi:
             self.button = int(self.config.get(self.section, 'pin'))
             print(f'ButtonTrigger: watching pin {self.button}')
@@ -37,7 +38,7 @@ class ButtonTrigger(QObject):
 
             # Add event detection with a bouncetime of 200ms
             # The callback function will only be called once every 200ms
-            GPIO.add_event_detect(self.button, GPIO.FALLING, callback=self.gpioCallback, bouncetime=200)
+            GPIO.add_event_detect(self.button, GPIO.FALLING, callback=self.gpioCallback, bouncetime=self.debounce)
         else:
             self.timeout = int(self.config.get(self.section, 'interval'))
 
