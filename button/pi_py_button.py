@@ -57,7 +57,7 @@ if __name__ == "__main__":
         elif media_type == 'video':
             print('Video, creating QApplication')
             app = QApplication(sys.argv)
-            player = VideoPlayer()
+            player = VideoPlayer.VideoPlayer(config)
             player.show()   
         else:
             print(f'Unknown type, \'{media_type}\' exiting...')
