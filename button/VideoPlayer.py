@@ -6,6 +6,9 @@ from PyQt6.QtWidgets import (
     QFrame,
     QVBoxLayout
 )
+from PyQt6.QtGui import (
+    QKeyEvent
+)
 from PyQt6.QtCore import QTimer, Qt, pyqtSlot
 import random
 from time import sleep
@@ -20,6 +23,7 @@ class VideoPlayer(QMainWindow):
         super().__init__(parent=parent)
         self.config = config
         self.section = 'video'
+        self.watchKeyEvents = False
         self.media_dir = config.get('general', 'media_folder')
         self.idle = config.get(self.section, 'idle_video')
         self.media_dir_valid = False
@@ -117,7 +121,7 @@ class VideoPlayer(QMainWindow):
         if self.filename:
             media = self.instance.media_new(os.path.abspath(self.filename))
             self.mediaplayer.set_media(media)
-            print(self.video_frame.winId())
+            #print(self.video_frame.winId())
             # Embed the VLC video output into our video frame.
             if sys.platform.startswith('linux'):
                 self.mediaplayer.set_xwindow(int(self.video_frame.winId()))
@@ -126,3 +130,10 @@ class VideoPlayer(QMainWindow):
             elif sys.platform == "darwin":
                 self.mediaplayer.set_nsobject(int(self.video_frame.winId()))
             self.mediaplayer.play()
+
+    def keyReleaseEvent(self, e : QKeyEvent):
+        super().keyReleaseEvent(e)
+
+        if self.watchKeyEvents:
+            print(e.text())
+            self.triggered('')

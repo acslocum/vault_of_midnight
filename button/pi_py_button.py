@@ -65,8 +65,11 @@ if __name__ == "__main__":
         
         # create the correct type of trigger
         trigger_type = config.get('general', 'trigger_type')
-        if trigger_type == 'button':
-            trigger = ButtonTrigger.ButtonTrigger(config)
+        if trigger_type == 'button' and ButtonTrigger.rpi == False:
+            if media_type == 'video':
+                player.watchKeyEvents = True
+            else:
+                trigger = ButtonTrigger.ButtonTrigger(config)
         elif trigger_type == 'timer':
             trigger = TimerTrigger.TimerTrigger(config)
         elif trigger_type == 'url':
@@ -74,8 +77,9 @@ if __name__ == "__main__":
         else:
             print(f'Unknown trigger type: {trigger_type}')
 
-        if app is not None and player is not None and trigger is not None:
-            trigger.triggered.connect(player.triggered)
+        if player is not None:
+            if trigger is not None:
+                trigger.triggered.connect(player.triggered)
             sys.exit(app.exec())
         else:
             print('Error creating application event loop')
