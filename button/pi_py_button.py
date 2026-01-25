@@ -65,10 +65,14 @@ if __name__ == "__main__":
         
         # create the correct type of trigger
         trigger_type = config.get('general', 'trigger_type')
-        if trigger_type == 'button' and ButtonTrigger.rpi == False:
-            if media_type == 'video':
-                player.watchKeyEvents = True
+        if trigger_type == 'button':
+            # if we're not on a Pi and media is video, we'll just tell Qt
+            # to watch for keyboard events for test
+            if ButtonTrigger.rpi == False:
+                if media_type == 'video':
+                    player.watchKeyEvents = True
             else:
+                # we're on a Pi, just create a standard button trigger object
                 trigger = ButtonTrigger.ButtonTrigger(config)
         elif trigger_type == 'timer':
             trigger = TimerTrigger.TimerTrigger(config)
