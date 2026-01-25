@@ -37,7 +37,7 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(self.container)
         
         self.player = QMediaPlayer()
-        self.player.setSource(QUrl.fromLocalFile('/Users/sean/Documents/Fortress Party/vault_of_midnight/button/media/video/idle.mp4'))
+        self.player.setSource(QUrl.fromLocalFile('./media/video/idle.mp4'))
         self.player.setVideoOutput(self.videoWidget)
         self.player.setAudioOutput(self.audioOut)
         self.audioOut.setVolume(1.0)
