@@ -14,7 +14,6 @@ else:
     from blessed import Terminal
     rpi = False
 
-
 class ButtonTrigger(QObject):
     triggered = pyqtSignal(str)
     
@@ -28,8 +27,10 @@ class ButtonTrigger(QObject):
             self.button = int(self.config.get(self.section, 'pin'))
             print(f'ButtonTrigger: watching pin {self.button}')
             if self.config.get(self.section, 'gpio_mode') == 'BOARD':
+                print(f'Setting RPi GPIO mode to BOARD')
                 GPIO.setmode(GPIO.BOARD)
             elif self.config.get(self.section, 'gpio_mode') == 'BCM':
+                print(f'Setting RPi GPIO mode to BCM')
                 GPIO.setmode(GPIO.BCM)
 
             # Set up the pin as an input with a pull-up or pull-down resistor
@@ -45,7 +46,6 @@ class ButtonTrigger(QObject):
             self.timer = QTimer(self)
             self.timer.timeout.connect(self.slotTimeout)
             self.timer.start(self.timeout)
-
 
     def gpioCallback(self, channel):
         print(f"Button pressed on channel {channel}!")
