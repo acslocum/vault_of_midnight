@@ -15,6 +15,7 @@ class AudioPlayer(QObject):
 
         pygame.mixer.init()
         self.media_dir = config.get('general', 'media_folder')
+        self.randomKeyword = config.get('general', 'random')
         self.idle = config.get('audio', 'idle_audio')
         if not os.path.isdir(self.media_dir):
             print(f'ERROR: AudioPlayer: media directory {self.media_dir} does not exist')
@@ -39,7 +40,7 @@ class AudioPlayer(QObject):
 
     @pyqtSlot(str)
     def triggered(self, filename : str):
-        if len(filename) == 0:
+        if len(filename) == 0 or filename == self.randomKeyword:
             # choose random file to play from list
             filename = os.path.join('.', self.media_dir, random.choice(self.files)) 
             #print(f'Audio Player randomly playing: {filename}')

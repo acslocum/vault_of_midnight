@@ -44,6 +44,7 @@ class VideoPlayer(QMainWindow):
         self.config = config
         self.section = 'video'
         self.watchKeyEvents = False
+        self.randomKeyword = config.get('general', 'random')
         self.media_dir = config.get('general', 'media_folder')
         self.idle = config.get(self.section, 'idle_video')
         self.media_dir_valid = False
@@ -85,7 +86,7 @@ class VideoPlayer(QMainWindow):
 
     @pyqtSlot(str)
     def triggered(self, filename : str):
-        if len(filename) > 0:
+        if len(filename) > 0 and filename != self.randomKeyword:
             print(f'Playing: {filename}')
         else:
             filename = random.choice(self.files)
