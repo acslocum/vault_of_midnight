@@ -1,26 +1,46 @@
 import configparser
 import os
+import random
 import sys
-from PyQt6.QtWidgets import (
-    QMainWindow,
-    QFrame,
-    QVBoxLayout
+from PyQt6.QtCore import (
+    QTimer,
+    QUrl,
+    pyqtSignal,
+    pyqtSlot
 )
+
 from PyQt6.QtGui import (
     QKeyEvent
 )
-from PyQt6.QtCore import QTimer, Qt, pyqtSlot
-import random
-from time import sleep
-import vlc
 
-idle_is_playing = True
-CONFIG_VIDEO_PATH = "video_folder"
-CONFIG_IDLE_VIDEO_NAME = "idle_video"
+from PyQt6.QtWidgets import (
+    QApplication,
+    QVBoxLayout,
+    QMainWindow,
+    QWidget,
+    QPushButton
+)
+
+from PyQt6.QtMultimedia import (
+  QMediaPlayer,
+  QAudioOutput,
+)
+
+from PyQt6.QtMultimediaWidgets import (
+  QVideoWidget
+)
+#os.environ["QT_LOGGING_RULES"] = "qt.multimedia.ffmpeg.debug=false"
 
 class VideoPlayer(QMainWindow):
     def __init__(self, config : configparser.ConfigParser, parent = None):
-        super().__init__(parent=parent)
+        super().__init__(parent = parent)
+
+        # set up user interface
+        self.videoWidget = QVideoWidget()
+        self.audioOut = QAudioOutput()
+        self.audioOut.setVolume(0.1)
+        self.setCentralWidget(self.videoWidget)
+
         self.config = config
         self.section = 'video'
         self.watchKeyEvents = False
@@ -41,95 +61,46 @@ class VideoPlayer(QMainWindow):
             self.idle_valid = True
         if self.media_dir_valid and self.idle_valid:
             self.load_files()
+            self.idle = os.path.join(self.media_dir, self.idle)
+        
+        self.idlePlayer = QMediaPlayer()
+        self.idlePlayer.setObjectName('IdlePlayer')
+        self.idlePlayer.mediaStatusChanged.connect(self.mediaStatusChanged)
+        self.idlePlayer.playbackStateChanged.connect(self.playbackStateChanged)
+        self.idlePlayer.errorOccurred.connect(self.errorOccurred)
+        self.idlePlayer.setSource(QUrl.fromLocalFile(self.idle))
+        self.idlePlayer.setVideoOutput(self.videoWidget)
+        self.idlePlayer.setAudioOutput(self.audioOut)
+        self.idlePlayer.setLoops(QMediaPlayer.Loops.Infinite)
+        self.idlePosition = -1
 
-        self.showFullScreen()
-
-        # Create a VLC instance and a media player.
-        self.instance = vlc.Instance()
-        self.mediaplayer = self.instance.media_player_new()
-
-        # Set up the main widget and layout.
-        self.widget = QFrame(self)
-        self.setCentralWidget(self.widget)
-        self.layout = QVBoxLayout()
-        self.widget.setLayout(self.layout)
-        #self.widget.setWindowFlags(0x00000800)
-        self.setStyleSheet("background-color: black;")
-
-        # Create the video frame where VLC will render the video.
-        self.video_frame = QFrame()
-        self.video_frame.setStyleSheet("background: black; border: 0px; padding: 0px; margin: 0px")
-        self.layout.addWidget(self.video_frame)
-
-        self.setCursor(Qt.CursorShape.BlankCursor)
-
-        #timer to check events
-        self.timer = QTimer(self)
-        self.timer.setInterval(500)
-        self.timer.timeout.connect(self.updateUI)
-        self.timer.start()
+        self.player = QMediaPlayer()
+        self.player.setObjectName('SelectedPlayer')
+        self.player.mediaStatusChanged.connect(self.mediaStatusChanged)
+        self.player.playbackStateChanged.connect(self.playbackStateChanged)
+        self.idlePlayer.errorOccurred.connect(self.errorOccurred)
+        #self.player.setSource(QUrl.fromLocalFile(self.idle))
+        self.player.setVideoOutput(None)
+        self.player.setAudioOutput(None)
 
     @pyqtSlot(str)
     def triggered(self, filename : str):
         if len(filename) > 0:
-            print(f'Video Player selecting: {filename}')
+            print(f'Playing: {filename}')
         else:
             filename = random.choice(self.files)
+            print(f'Randomly selecting: {filename}')
         filename = os.path.join('.', self.media_dir, filename)
         self.requested_video_name = filename
+        self.player.setSource(QUrl.fromLocalFile(self.requested_video_name))
     
     def load_files(self):
+        extension = '.mp4'
         files = os.listdir(self.media_dir)
-        files.remove(self.idle)
-        self.files = files
-        #print(self.files)
-
-    def video_directory(self):
-        global CONFIG_VIDEO_PATH
-        return f"{self.config[configparser.UNNAMED_SECTION][CONFIG_VIDEO_PATH]}"
-
-    def play_idle_video(self):
-        global idle_is_playing
-        if(self.mediaplayer.is_playing()):
-            return
-        idle_is_playing = True
-        self.open_file(os.path.join('.', self.media_dir, self.idle))
-        return
-    
-    def updateUI(self):
-        self.play_idle_video()
-        if self.requested_video_name:
-            print(f'updateUI: {self.requested_video_name}')
-            self.play_video(self.requested_video_name)
-            self.requested_video_name = None
-            return
-
-    def play_video(self, video):
-        global idle_is_playing
-        if (self.requested_video_name is not None) & (idle_is_playing == True):
-            self.mediaplayer.stop()
-            idle_is_playing = False
-            self.open_file(video)
-            self.timer.stop()
-            sleep(2)
-            self.timer.start()
-
-
-    def open_file(self, video):
-        # Open a file dialog to select a video file.
-        self.filename = video
-        if self.filename:
-            media = self.instance.media_new(os.path.abspath(self.filename))
-            self.mediaplayer.set_media(media)
-            #print(self.video_frame.winId())
-            # Embed the VLC video output into our video frame.
-            if sys.platform.startswith('linux'):
-                self.mediaplayer.set_xwindow(int(self.video_frame.winId()))
-            elif sys.platform == "win32":
-                self.mediaplayer.set_hwnd(self.video_frame.winId())
-            elif sys.platform == "darwin":
-                self.mediaplayer.set_nsobject(int(self.video_frame.winId()))
-            self.mediaplayer.play()
+        for f in files:
+            if f != self.idle and f.endswith(extension):
+                self.files.append(f)
+        #print(f'Loaded: {self.files}')
 
     def keyReleaseEvent(self, e : QKeyEvent):
         super().keyReleaseEvent(e)
@@ -137,3 +108,54 @@ class VideoPlayer(QMainWindow):
         if self.watchKeyEvents:
             print(e.text())
             self.triggered('')
+
+    def playIdle(self):
+        print(f'Starting playback of idle video')
+        self.idlePlayer.play()
+
+    def errorOccurred(self, error : QMediaPlayer.Error , errorString : str):
+        s = ''
+        print(f'VideoPlayer::errorOccurred: {error}, {errorString}')
+    
+    def mediaStatusChanged(self, status : QMediaPlayer.MediaStatus):
+        if self.sender() == self.idlePlayer:
+            pass
+        elif self.sender() == self.player:
+            if self.requested_video_name is not None and status == QMediaPlayer.MediaStatus.LoadedMedia:
+                #print('Pausing idle player')
+                self.idlePosition = self.idlePlayer.position()
+                self.idlePlayer.stop()
+                self.idlePlayer.setVideoOutput(None)
+                self.idlePlayer.setAudioOutput(None)
+
+        #print(f'VideoPlayer::mediaStatusChanged: {self.sender().objectName()} state changed to {status}')
+
+    def playbackStateChanged(self, newState : QMediaPlayer.PlaybackState):
+        if self.sender() == self.idlePlayer:
+            if self.requested_video_name is not None and newState == QMediaPlayer.PlaybackState.StoppedState:
+                self.player.setVideoOutput(self.videoWidget)
+                self.player.setAudioOutput(self.audioOut)
+                self.player.play()
+                self.requested_video_name = None
+        elif self.sender() == self.player:
+            if self.requested_video_name is None and newState == QMediaPlayer.PlaybackState.StoppedState:
+                self.player.setVideoOutput(None)
+                self.player.setAudioOutput(None)
+                self.idlePlayer.setVideoOutput(self.videoWidget)
+                self.idlePlayer.setAudioOutput(self.audioOut)
+                if self.idlePosition != -1:
+                    self.idlePlayer.setPosition(self.idlePosition)
+                self.idlePlayer.play()
+        #print(f'VideoPlayer::playbackStateChanged: {self.sender().objectName()} state changed to {newState}')
+
+if __name__ == '__main__':
+    config_ini = configparser.ConfigParser(allow_unnamed_section=True)
+    config_ini.read("config.ini")
+    app = QApplication(sys.argv)
+    w = VideoPlayer2(config_ini)
+    w.watchKeyEvents = True
+    #w.showFullScreen()
+    w.showMaximized()
+    QTimer.singleShot(0, w.playIdle)
+
+    exit(app.exec())
