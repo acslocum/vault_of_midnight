@@ -51,7 +51,7 @@ if __name__ == "__main__":
             app = QCoreApplication(sys.argv)
             player = AudioPlayer.AudioPlayer(config)
         elif media_type == 'console':
-            print('Audio only, creating QCoreApplication')
+            print('Console only, creating QCoreApplication')
             app = QCoreApplication(sys.argv)
             player = ConsolePlayer.ConsolePlayer(config)
         elif media_type == 'video':
