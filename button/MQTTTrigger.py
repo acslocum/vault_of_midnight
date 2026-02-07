@@ -140,12 +140,12 @@ class MqttClient(QObject):
     # callbacks
     def on_message(self, mqttc, obj, msg):
         mstr = msg.payload.decode("ascii")
-        print("on_message", mstr, obj, mqttc)
+        #print("on_message", mstr, obj, mqttc)
         self.messageSignal.emit(mstr)
         self.triggered.emit(mstr)
 
     def on_connect(self, *args):
-        print("on_connect", args)
+        #print("on_connect", args)
         self.state = MqttClient.Connected
         self.connected.emit()
         self.m_client.subscribe(self.topic)
