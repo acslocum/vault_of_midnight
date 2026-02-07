@@ -20,6 +20,7 @@ import VideoPlayer
 import ButtonTrigger
 import TimerTrigger
 import URLTrigger
+import MQTTTrigger
 
 kill_process = False
 config = None
@@ -74,6 +75,9 @@ if __name__ == "__main__":
             else:
                 # we're on a Pi, just create a standard button trigger object
                 trigger = ButtonTrigger.ButtonTrigger(config)
+        elif trigger_type == 'mqtt':
+            trigger = MQTTTrigger.MqttClient(config)
+            trigger.connectToHost()
         elif trigger_type == 'timer':
             trigger = TimerTrigger.TimerTrigger(config)
         elif trigger_type == 'url':
