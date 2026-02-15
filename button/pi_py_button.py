@@ -72,7 +72,11 @@ if __name__ == "__main__":
         
         # create the correct type of trigger
         trigger_type = config.get('general', 'trigger_type')
-        if trigger_type == 'button':
+        if trigger_type == 'timer':
+            trigger = TimerTrigger.TimerTrigger(config)
+        elif trigger_type == 'url':
+            trigger = URLTrigger.URLTrigger(config)
+        elif trigger_type == 'button':
             # if we're not on a Pi and media is video, we'll just tell Qt
             # to watch for keyboard events for test
             if ButtonTrigger.rpi == False:
@@ -84,10 +88,6 @@ if __name__ == "__main__":
         elif trigger_type == 'mqtt':
             trigger = MQTTTrigger.MqttClient(config)
             trigger.connectToHost()
-        elif trigger_type == 'timer':
-            trigger = TimerTrigger.TimerTrigger(config)
-        elif trigger_type == 'url':
-            trigger = URLTrigger.URLTrigger(config)
         else:
             print(f'Unknown trigger type: {trigger_type}')
 
