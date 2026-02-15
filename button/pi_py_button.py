@@ -53,19 +53,17 @@ if __name__ == "__main__":
         config = read_configuration()
         #print(config.options('general'))
 
-        # create the correct type of application based on media type
+        app = QApplication(sys.argv)
+        # create the correct player based on type
         media_type = config.get('general', 'type')
         if media_type == 'audio':
-            print('Audio only, creating QCoreApplication')
-            app = QCoreApplication(sys.argv)
+            print('Creating audio player')
             player = AudioPlayer.AudioPlayer(config)
         elif media_type == 'console':
-            print('Console only, creating QCoreApplication')
-            app = QCoreApplication(sys.argv)
+            print('Creating console player')            
             player = ConsolePlayer.ConsolePlayer(config)
         elif media_type == 'video':
-            print('Video, creating QApplication')
-            app = QApplication(sys.argv)
+            print('Creating video player')
             player = VideoPlayer.VideoPlayer(config)
             player.show()   
         else:
