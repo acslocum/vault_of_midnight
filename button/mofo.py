@@ -69,7 +69,7 @@ if __name__ == "__main__":
             player.show()   
         else:
             print(f'Unknown type, \'{media_type}\' exiting...')
-            exit()
+            exit(-1)
         
         # create the correct type of trigger
         trigger_type = config.get('general', 'trigger_type')
@@ -95,6 +95,7 @@ if __name__ == "__main__":
             trigger.connectToHost()
         else:
             print(f'Unknown trigger type: {trigger_type}')
+            exit(-1)
 
         if player is not None:
             if trigger is not None:
@@ -106,7 +107,7 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         # Perform any necessary cleanup here before exiting
         print("Ctrl+C pressed. Exiting gracefully.")
-        sys.exit(1)
+        sys.exit(0)
     except Exception as e:
         print(f"An unexpected error occurred: {e}")
         sys.exit(-1)
