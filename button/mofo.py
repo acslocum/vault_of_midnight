@@ -26,11 +26,12 @@ kill_process = False
 config = None
 
 def read_configuration():
-    config_ini = configparser.ConfigParser(allow_unnamed_section=True)
+    config_ini = configparser.ConfigParser(allow_unnamed_section=True, inline_comment_prefixes=(';','#'))
     config_ini.read("config.ini")
 
     # debug specific parameters
     # print(f'debug: {config_ini.get('general', 'debug')}')
+    # print(f'test: {config_ini.get('general', 'test')}')
     # print(f'player type: {config_ini.get('general', 'type')}')
     # print(f'trigger type: {config_ini.get('general', 'trigger_type')}')
     # print(f'random: {config_ini.get('general', 'random')}')
