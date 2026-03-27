@@ -63,6 +63,11 @@ if __name__ == "__main__":
             import VideoPlayer
             player = VideoPlayer.VideoPlayer(config)
             player.show()   
+        elif media_type == 'mqtt_pub':
+            print('Creating MQTT publisher')
+            import MQTTPlayer
+            player = MQTTPlayer.MqttPublisher(config)
+            player.connectToHost()
         else:
             print(f'Unknown type, \'{media_type}\' exiting...')
             exit(-1)
