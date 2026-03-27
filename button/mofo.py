@@ -12,15 +12,8 @@ import configparser
 import signal
 
 # import player classes
-import AudioPlayer
-import ConsolePlayer
-import VideoPlayer
 
 # import trigger classes
-import ButtonTrigger
-import TimerTrigger
-import URLTrigger
-import MQTTTrigger
 
 kill_process = False
 config = None
@@ -59,12 +52,15 @@ if __name__ == "__main__":
         media_type = config.get('general', 'type')
         if media_type == 'audio':
             print('Creating audio player')
+            import AudioPlayer
             player = AudioPlayer.AudioPlayer(config)
         elif media_type == 'console':
-            print('Creating console player')            
+            print('Creating console player')
+            import ConsolePlayer
             player = ConsolePlayer.ConsolePlayer(config)
         elif media_type == 'video':
             print('Creating video player')
+            import VideoPlayer
             player = VideoPlayer.VideoPlayer(config)
             player.show()   
         else:
@@ -75,13 +71,16 @@ if __name__ == "__main__":
         trigger_type = config.get('general', 'trigger_type')
         if trigger_type == 'timer':
             print('Creating timer trigger')
+            import TimerTrigger
             trigger = TimerTrigger.TimerTrigger(config)
         elif trigger_type == 'url':
             print('Creating URL trigger')
+            import URLTrigger
             trigger = URLTrigger.URLTrigger(config)
         elif trigger_type == 'button':
             # if we're not on a Pi and media is video, we'll just tell Qt
             # to watch for keyboard events for test
+            import ButtonTrigger
             if ButtonTrigger.rpi == False:
                 if media_type == 'video':
                     player.watchKeyEvents = True
@@ -91,6 +90,7 @@ if __name__ == "__main__":
                 trigger = ButtonTrigger.ButtonTrigger(config)
         elif trigger_type == 'mqtt':
             print('Creating MQTT trigger')
+            import MQTTTrigger
             trigger = MQTTTrigger.MqttClient(config)
             trigger.connectToHost()
         else:
